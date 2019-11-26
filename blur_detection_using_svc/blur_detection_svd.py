@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-# @Time    : 2019/11/25 下午3:27
 # @Author  : Abel King
 # @File    : blur_detection.py
-# @Software: PyCharm
 
 import cv2
 import numpy as np
@@ -10,21 +8,20 @@ import heartrate as ht
 
 # ht.trace(browser=True)
 
-SHAPE = (1024, 960)
 
-
-def get_blur_degree(image_file, sv_num=10):
+def get_blur_degree(image_file, shape=(1024, 960), sv_num=10):
     img = cv2.imread(image_file, cv2.IMREAD_GRAYSCALE)
-    img = cv2.resize(img, SHAPE, interpolation=cv2.INTER_AREA)
+    if img.shape[0] != shape[0] or img.shape[1] != shape[1]:
+        img = cv2.resize(img, shape, interpolation=cv2.INTER_AREA)
     u, s, v = np.linalg.svd(img)
     top_sv = np.sum(s[0:sv_num])
     total_sv = np.sum(s)
     return top_sv / total_sv
 
 
-def get_blur_map(image_file, win_size=10, sv_num=3):
+def get_blur_map(image_file, shape=(1024, 960), win_size=10, sv_num=3):
     img = cv2.imread(image_file, cv2.IMREAD_GRAYSCALE)
-    img = cv2.resize(img, SHAPE, interpolation=cv2.INTER_AREA)
+    img = cv2.resize(img, shape, interpolation=cv2.INTER_AREA)
     new_img = np.zeros((img.shape[0] + win_size * 2, img.shape[1] + win_size * 2))
     for i in range(new_img.shape[0]):
         for j in range(new_img.shape[1]):
@@ -67,11 +64,19 @@ def get_blur_map(image_file, win_size=10, sv_num=3):
     return blur_map
 
 
-import pathlib
+def get_batch_blur_degree(image_files, shape, sv_num):
+    scores = dict.fromkeys(image_files, None)
+    for _path in image_files:
+        scores[_path] = get_blur_degree(_path, shape, sv_num)
+    return scores
 
-files = [str(tmp) for tmp in pathlib.Path('test/image/').glob('*/*')]
-for file in files:
-    print(file, get_blur_degree(file))
-    out_file = file.replace('blur', 'blur_result')
-    blur_map = get_blur_map(file)
-    cv2.imwrite(out_file, (1 - blur_map) * 255)
+
+if __name__ == "__main__":
+    import pathlib
+
+    files = [str(tmp) for tmp in pathlib.Path('test/image/').glob('*/*')]
+    for file in files:
+        print(file, get_blur_degree(file))
+        out_file = file.replace('blur', 'blur_result')
+        blur_map = get_blur_map(file)
+        cv2.imwrite(out_file, (1 - blur_map) * 255)
