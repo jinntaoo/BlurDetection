@@ -44,22 +44,22 @@ class Metrics:
                              'accuracy': self.accuracy, 'f1_score': self.f1_score})
 
 
-def get_preds(theta, scores, info=0):
-    if info == 0:
+def get_preds(theta, scores, positive_type=0):
+    if positive_type == 0:
         return np.where(scores >= theta, 1, 0)
-    elif info == 1:
+    elif positive_type == 1:
         return np.where(scores >= theta, 0, 1)
     else:
         raise Exception('Wrong')
 
 
-def range_theta(results, theta, length, theta_low=0, theta_high=0, times=10):
+def range_theta(results, theta, length, theta_low=0, theta_high=0, times=10, positive_type=1):
     samples, scores, labels = results['samples'], results['scores'], results['labels']
     metric_results = list()
     if theta_low == theta_high == 0:
         theta_low, theta_high = theta - length, theta + length
     for theta in np.arange(theta_low, theta_high, (theta_high - theta_low) / times):
-        preds = get_preds(theta, scores, info=0)
+        preds = get_preds(theta, scores, positive_type)
         metrics = Metrics({'samples': samples, 'preds': preds, 'labels': labels})
         metric_results.append({theta: metrics.metric_dict})
     return metric_results

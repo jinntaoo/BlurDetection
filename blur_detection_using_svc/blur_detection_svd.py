@@ -9,10 +9,15 @@ import heartrate as ht
 # ht.trace(browser=True)
 
 
-def get_blur_degree(image_file, shape=(1024, 960), sv_num=10):
+def fix_image_size(image, expected_pixels=2E6):
+    ratio = float(expected_pixels) / float(image.shape[0] * image.shape[1])
+    return cv2.resize(image, (0, 0), fx=ratio, fy=ratio, interpolation=cv2.INTER_AREA)
+
+
+def get_blur_degree(image_file, shape=(1024, 960), sv_num=10, fix_size=True):
     img = cv2.imread(image_file, cv2.IMREAD_GRAYSCALE)
-    if img.shape[0] != shape[0] or img.shape[1] != shape[1]:
-        img = cv2.resize(img, shape, interpolation=cv2.INTER_AREA)
+    if fix_size:
+        img = fix_image_size(img)
     u, s, v = np.linalg.svd(img)
     top_sv = np.sum(s[0:sv_num])
     total_sv = np.sum(s)
@@ -67,7 +72,7 @@ def get_blur_map(image_file, shape=(1024, 960), win_size=10, sv_num=3):
 def get_batch_blur_degree(image_files, shape, sv_num):
     scores = dict.fromkeys(image_files, None)
     for _path in image_files:
-        scores[_path] = get_blur_degree(_path, shape, sv_num)
+        scores[_path] = get_blur_degree(_path, shape, sv_num, fix_size=True)
     return scores
 
 
@@ -76,7 +81,7 @@ if __name__ == "__main__":
 
     files = [str(tmp) for tmp in pathlib.Path('test/image/').glob('*/*')]
     for file in files:
-        print(file, get_blur_degree(file))
+        print(file, get_blur_degree(file, fix_size=True))
         out_file = file.replace('blur', 'blur_result')
         blur_map = get_blur_map(file)
         cv2.imwrite(out_file, (1 - blur_map) * 255)

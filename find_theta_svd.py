@@ -38,11 +38,12 @@ def main(args):
     paths, scores, labels = np.asarray(paths), np.asarray(scores), np.asarray(labels)
     results = {'samples': paths, 'scores': scores, 'labels': labels}
 
-    metrics = utils.range_theta(results, theta=0, length=0, theta_low=min(scores), theta_high=max(scores), times=10)
+    metrics = utils.range_theta(results, theta=0, length=0, theta_low=min(scores), theta_high=max(scores),
+                                times=10, positive_type=0)
     best_theta = get_best_theta(metrics, theta_name='f1_score')
     print('best_theta: {}'.format(best_theta))
 
-    metrics2 = utils.range_theta(results, theta=best_theta, length=5, times=20)
+    metrics2 = utils.range_theta(results, theta=best_theta, length=5, times=20, positive_type=0)
     best_theta2 = get_best_theta(metrics2, theta_name='f1_score')
     print('best_theta: {}'.format(best_theta2))
     print('metrics1: {} \n metrics2: {}'.format(metrics, metrics2))

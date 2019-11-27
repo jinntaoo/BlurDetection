@@ -12,14 +12,16 @@ import numpy as np
 
 
 def get_best_theta(metrics, theta_name):
-    ret = float('-inf')
+    best_theta = float('-inf')
+    best_metric = None
     _score = float('-inf')
     for metric in metrics:
         _tmp = list(metric.values())[0][theta_name]
         if _tmp != float('nan') and _tmp != float('-inf') and _tmp != float('inf') and _tmp > _score:
             _score = _tmp
-            ret = list(metric.keys())[0]
-    return ret
+            best_theta = list(metric.keys())[0]
+            best_metric = metric
+    return best_theta, best_metric
 
 
 def main(args):
@@ -39,14 +41,15 @@ def main(args):
     paths, scores, labels = np.asarray(paths), np.asarray(scores), np.asarray(labels)
     results = {'samples': paths, 'scores': scores, 'labels': labels}
 
-    metrics = utils.range_theta(results, theta=0, length=0, theta_low=min(scores), theta_high=max(scores), times=10)
-    best_theta = get_best_theta(metrics, theta_name='f1_score')
-    print('best_theta: {}'.format(best_theta))
+    metrics = utils.range_theta(results, theta=0, length=0, theta_low=min(scores), theta_high=max(scores),
+                                times=100, positive_type=1)
+    best_theta, best_metric = get_best_theta(metrics, theta_name='f1_score')
+    print('best_theta: {0}, metrics: {1}'.format(best_theta, list(best_metric.values())[0]['f1_score']))
 
-    metrics2 = utils.range_theta(results, theta=best_theta, length=5, times=20)
-    best_theta2 = get_best_theta(metrics2, theta_name='f1_score')
-    print('best_theta: {}'.format(best_theta2))
-    print('metrics1: {} \n metrics2: {}'.format(metrics, metrics2))
+    metrics2 = utils.range_theta(results, theta=best_theta, length=500, times=100, positive_type=1)
+    best_theta2, best_metric2 = get_best_theta(metrics2, theta_name='f1_score')
+    print('best_theta: {0}, metrics: {1}'.format(best_theta2, list(best_metric2.values())[0]['f1_score']))
+
 
 
 def parse():

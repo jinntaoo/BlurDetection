@@ -32,5 +32,5 @@ def get_batch_blur_degree(image_files, fix_size=True):
         img = cv2.imread(_path, cv2.IMREAD_GRAYSCALE)
         if fix_size:
             img = fix_image_size(img)
-        scores[_path] = estimate_blur(img)
+        _, scores[_path], _ = estimate_blur(img)
     return scores
