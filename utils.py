@@ -3,7 +3,7 @@
 # @File    : find_theta.py
 
 import numpy as np
-
+import tqdm
 
 class Metrics:
     """Two classes"""
@@ -50,7 +50,7 @@ def get_preds(theta, scores, positive_type=0):
     elif positive_type == 1:
         return np.where(scores >= theta, 0, 1)
     else:
-        raise Exception('Wrong')
+        raise Exception('Sth. Wrong')
 
 
 def range_theta(results, theta, length, theta_low=0, theta_high=0, times=10, positive_type=1):
@@ -58,8 +58,9 @@ def range_theta(results, theta, length, theta_low=0, theta_high=0, times=10, pos
     metric_results = list()
     if theta_low == theta_high == 0:
         theta_low, theta_high = theta - length, theta + length
-    for theta in np.arange(theta_low, theta_high, (theta_high - theta_low) / times):
+    for theta in tqdm.tqdm(np.arange(theta_low, theta_high, (theta_high - theta_low) / times)):
         preds = get_preds(theta, scores, positive_type)
         metrics = Metrics({'samples': samples, 'preds': preds, 'labels': labels})
         metric_results.append({theta: metrics.metric_dict})
+        # print('theta: {0}'.format(theta))
     return metric_results

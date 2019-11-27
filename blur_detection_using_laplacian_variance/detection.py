@@ -4,6 +4,9 @@ import logging
 
 import cv2
 import numpy
+import tqdm
+import progressbar
+
 
 
 def fix_image_size(image, expected_pixels=2E6):
@@ -28,9 +31,12 @@ def pretty_blur_map(blur_map, sigma=5):
 
 def get_batch_blur_degree(image_files, fix_size=True):
     scores = dict.fromkeys(image_files, None)
-    for _path in image_files:
+    # for ith, _path in enumerate(image_files, 1):
+    for _path in tqdm.tqdm(image_files):
         img = cv2.imread(_path, cv2.IMREAD_GRAYSCALE)
         if fix_size:
             img = fix_image_size(img)
         _, scores[_path], _ = estimate_blur(img)
+        # if ith % 100 == 0:
+        #     print('get blur_degree {}'.format(ith))
     return scores

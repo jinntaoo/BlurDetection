@@ -4,6 +4,7 @@
 
 import cv2
 import numpy as np
+import tqdm
 import heartrate as ht
 
 # ht.trace(browser=True)
@@ -71,7 +72,7 @@ def get_blur_map(image_file, shape=(1024, 960), win_size=10, sv_num=3):
 
 def get_batch_blur_degree(image_files, shape, sv_num):
     scores = dict.fromkeys(image_files, None)
-    for _path in image_files:
+    for _path in tqdm.tqdm(image_files):
         scores[_path] = get_blur_degree(_path, shape, sv_num, fix_size=True)
     return scores
 

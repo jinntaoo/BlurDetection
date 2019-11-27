@@ -42,11 +42,11 @@ def main(args):
     results = {'samples': paths, 'scores': scores, 'labels': labels}
 
     metrics = utils.range_theta(results, theta=0, length=0, theta_low=min(scores), theta_high=max(scores),
-                                times=100, positive_type=1)
+                                times=1000, positive_type=1)
     best_theta, best_metric = get_best_theta(metrics, theta_name='f1_score')
     print('best_theta: {0}, metrics: {1}'.format(best_theta, list(best_metric.values())[0]['f1_score']))
 
-    metrics2 = utils.range_theta(results, theta=best_theta, length=500, times=100, positive_type=1)
+    metrics2 = utils.range_theta(results, theta=best_theta, length=500, times=1000, positive_type=1)
     best_theta2, best_metric2 = get_best_theta(metrics2, theta_name='f1_score')
     print('best_theta: {0}, metrics: {1}'.format(best_theta2, list(best_metric2.values())[0]['f1_score']))
 
