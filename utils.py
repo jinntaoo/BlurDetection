@@ -4,6 +4,13 @@
 
 import numpy as np
 import tqdm
+import cv2
+
+
+def fix_image_size(image, expected_pixels=2E6):
+    ratio = float(expected_pixels) / float(image.shape[0] * image.shape[1])
+    return cv2.resize(image, (0, 0), fx=ratio, fy=ratio, interpolation=cv2.INTER_AREA)
+
 
 class Metrics:
     """Two classes"""

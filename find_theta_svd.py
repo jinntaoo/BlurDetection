@@ -4,7 +4,7 @@
 # Code is far away from bug with the God Animal protecting
 
 import utils
-from blur_detection_using_svc import blur_detection_svd
+from blur_detection_using_svd import blur_detection_svd
 import argparse
 import pathlib
 import numpy as np
